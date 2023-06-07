@@ -6,7 +6,7 @@ op.api_key = st.secrets["OPENAI_API_KEY"]
 st.title("GOLF AI engineered by TINO5")
 st.write("")
 
-tab1, tab2 = st.tabs(["Create Images using GPT", "Golf Fitting"])
+tab1, tab2 = st.tabs([" ", "Golf Fitting"])
 
 with tab1:
     with st.form(key="form_key_tab1"):
@@ -47,6 +47,13 @@ with tab1:
 
 with tab2:
     with st.form(key="form_key_tab2"):
+        
+        st.subheader('Tell me about you')
+        
+        club_no = st.selectbox('Club No.', ('Driver', 'Wood', 'Iron', 'Wedge'))
+        fitting_why = st.selectbox('What are you fitting now?', ('For Distance', 'For Draw', 'For Fade'))
+        brands = st.multiselect('What are your favorite brand?', ['Fujikura Ventus', 'Mitsubishi Tensei', 'Graphite Design Tour AD'], default=['Fujikura Ventus', 'Mitsubishi Tensei'])
+        
         st.subheader('Enter average trackman data')
         club_speed = st.text_input(label='Club speed (mph)', value="100")
         ball_speed = st.text_input(label='Ball speed (mph)', value="150")
@@ -63,41 +70,25 @@ with tab2:
             st.write("Please fill all the fields")
         
         else:
-            content = "나의 골프 드라이버 스윙을 분석해서 거리를 더 늘리기 위해서 샤프트를 사용해야되는지 알려줬으면 좋겠어."
-            content = content + "그러기 위해서는 트랙맨에서 나오는 Club speed, ball speed, smash factor, attack_angle, launch angle, spin rate, max height, carry 등의 수치들을 이해 해야해."
-            content = content + "이 수치들을 이해하고 분석해서 나에게 가장 적합한 샤프트 스펙을 Flex, Weight, Torque 기준으로 추천해줘."
+            if fitting_why == 'For Distance':
+                content = "저의 골프 " + club_no + " 스윙을 분석해서 거리를 더 늘리기 위해서 어떤 스펙의 샤프트를 사용해야되는지 알려줬으면 좋겠습니다." + "\n"
+            elif fitting_why == 'For Draw':
+                content = "저의 골프 " + club_no + " 스윙을 분석해서 Draw 구질을 만들기 위해서 어떤 스펙의 샤프트를 사용해야되는지 알려줬으면 좋겠습니다." + "\n"
+            else:
+                content = "저의 골프 " + club_no + " 스윙을 분석해서 Fade 구질을 만들기 위해서 어떤 스펙의 샤프트를 사용해야되는지 알려줬으면 좋겠습니다." + "\n"
+                
+            content = content + "그러기 위해서는 트랙맨에서 나오는 Club speed, ball speed, smash factor, attack_angle, launch angle, spin rate, max height, carry 등의 수치들을 이해해야 합니다." + "\n"
+            content = content + "이 수치들을 이해하고 분석해서 나에게 가장 적합한 " + club_no + " 샤프트 스펙을 Flex(즉, Stiffness), Weight, Torque 기준으로 알려주되, "
+            content = content + "샤프트 브랜드는 " + ", ".join(brands) + " 로 추천해주면 좋겠습니다." + "\n"
+            
+            #st.write(content)
             
             gpt_prompt = [{
                 "role": "user",
                 "content": content
             }]
             
-            if False:
-                content = "트랙맨에서 측정하는 데이터를 이해하고 이를 통해 각 골프 클럽과 샤프트의 특성을 맞추는 것은 골프 스윙의 개선과 관련있습니다. 골프 스윙을 분석하고 조언하는 것은 단순한 권장사항이 아닌, 개인의 능력과 스윙 스타일, 그리고 골프장의 조건 등을 모두 고려해야 합니다.\
-                    트랙맨에서 측정하는 데이터 중 일부는 골퍼의 스윙 경로와 클럽 헤드 속도, 공이 클럽에 충돌하는 각도 및 속도, 그리고 공이 날아가는 각도와 스핀 등을 측정합니다. 이런 데이터들을 통해 골퍼의 스윙을 정밀하게 분석하고, 골프 클럽과 샤프트 선택에 도움을 줄 수 있습니다.\
-                    트랙맨에서 제공하는 데이터를 이해하고 분석하는 것은 골프 스윙을 개선하는데 큰 도움이 될 것입니다. 이를 통해, 스윙을 보완할 수 있고, 더 나은 결과를 얻는 데 도움이 될 수 있는 클럽과 샤프트의 선택을 조언할 수 있습니다. 그러나 특정 클럽이나 샤프트를 추천하는 것은 개인의 스윙 방식, 스타일, 편안함 등을 고려해야하므로, 자세한 조언을 원하신다면, 더 많은 정보를 제공해주시면 감사하겠습니다."
-                    
-                gpt_prompt.append({
-                    "role": "system",
-                    "content": content
-                })
-
-                content = "알겠어. 나의 스윙에 대한 trackman 데이터와 샤프트들의 스펙을 참고해서 나에게 가장 적합한 샤프트 모델을 골라줘"
-                gpt_prompt.append({
-                    "role": "user",
-                    "content": content
-                })
-
-                content = "물론 도와드리겠습니다. 당신의 트랙맨 데이터와 샤프트들의 스펙을 공유해주시면, 그에 따라 가장 적합한 샤프트를 추천해드리겠습니다. \
-                        데이터를 제공해주시면서 가장 중요하게 생각하는 요소가 무엇인지도 함께 알려주시면 좋겠습니다. \
-                        예를 들어, 공의 거리를 늘리고 싶어하는지, 아니면 공의 정확도와 방향성을 높이고 싶어하는지 등이 중요한 요소가 될 수 있습니다."
-                        
-                gpt_prompt.append({
-                    "role": "system",
-                    "content": content
-                })
-            
-            content = content + "이제 나의 trackman 스윙 데이터와 여러 샤프트 모델의 스펙을 공유해줄께. 부가적인 설명은 제외하고 추천 샤프트의 모델명 3개만 추려서 대답해줘."
+            content = content + "이제 저의 trackman 스윙 데이터와 여러 샤프트 모델의 스펙을 공유해 드리겠습니다. 부가적인 설명은 제외하고 추천 샤프트의 모델명 2개만 추려서 대답해주세요."
             
             content = content + "trackman data 는 아래와 같다." + "\n"
             content = content + "- Club Speed: " + club_speed + " mph" + "\n"
@@ -114,24 +105,19 @@ with tab2:
                 "content": content
             })
             
-            if False:
-                content = "당신의 Trackman 데이터에 따르면, 클럽 속도(Club Speed)가 113mph로 상당히 높은 편입니다. \
-                        이는 골프 샤프트 선택에 있어 높은 강성의 샤프트를 고려해봐야 할 수 있음을 시사합니다. \
-                        고강성의 샤프트는 클럽 헤드 속도를 관리하는 데 도움이 됩니다.\
-                        또한, 스핀 비율(Spin Rate)이 2686rpm이고, 발사 각도(Launch Angle)는 10.9도로 보입니다. 이는 중간 정도의 스핀 비율과 낮은 발사 각도를 가지고 있어, 더 낮은 스핀 비율과 높은 발사 각도를 가진 샤프트를 고려해볼 수 있습니다.\
-                        최대 높이(Max Height)는 32야드, 휴대 거리(Carry)는 275야드로, 이 또한 높은 강성의 샤프트를 고려해볼만한 가치가 있습니다.\
-                        하지만, 이러한 추천은 당신의 스윙 스타일과 기술, 물리적 조건 등에 따라 달라질 수 있으므로 참고로만 활용하시는 것이 좋습니다. \
-                        실제 적합한 샤프트를 선택하기 위해서는 전문가의 도움을 받거나 직접 샤프트를 테스트해보는 것이 가장 좋습니다.\
-                        샤프트 스펙을 제공해주시면, 이에 따라 추천을 좀 더 구체화할 수 있습니다."
-                        
-                gpt_prompt.append({
-                    "role": "system",
-                    "content": content
-                })
+            with st.spinner(text='Analysing swing data...'):
+                gpt_response = op.ChatCompletion.create(
+                    model = "gpt-3.5-turbo",
+                    messages=gpt_prompt
+                )
+
+            prompt_from_gpt = gpt_response.choices[0]["message"]["content"]
+                
+            st.write(prompt_from_gpt)
+            st.write("")
             
             if False:
-                content = content + "샤프트들의 스펙은 아래와 같다." + "\n"
-                
+                content = "아래 샤프트들 중에서 추천해줬으면 한다." + "\n"
                 content = content + "Ventus Blue 5 Flex R2 모델 : Flex R2, Length 46, Weight 58, Torque 4" + "\n"
                 content = content + "Ventus Blue 5 Flex R 모델 : Flex R, Length 46, Weight 58.5, Torque 3.7" + "\n"
                 content = content + "Ventus Blue 5 Flex S 모델 : Flex S, Length 46, Weight 59, Torque 3.3" + "\n"
@@ -251,31 +237,19 @@ with tab2:
                 content = content + "TENSEI 1K Pro Blue 80 S 모델: Flex S, weight 82, torque 3.2" + "\n"
                 content = content + "TENSEI 1K Pro Blue 80 X 모델: Flex X, weight 84, torque 3.2" + "\n"
                 content = content + "TENSEI 1K Pro Blue 80 TX 모델: Flex TX, weight 86, torque 3.2" + "\n"
-                
-                gpt_prompt.append({
+                                    
+                gpt_prompt_2 = [{
                     "role": "user",
                     "content": content
-                })
-                                    
-            if False:
-                trackman_data = club_speed + "\n"
-                trackman_data = trackman_data + ball_speed + "\n"
-                trackman_data = trackman_data + smash_factor + "\n"
-                trackman_data = trackman_data + attack_angle + "\n"
-                trackman_data = trackman_data + launch_angle + "\n"
-                trackman_data = trackman_data + spin_rate + "\n"
-                trackman_data = trackman_data + max_height + "\n"
-                trackman_data = trackman_data + carry + "\n"
-                st.write(trackman_data)
-                st.write("")
-            
-            with st.spinner(text='Generating prompt...'):
-                gpt_response = op.ChatCompletion.create(
-                    model = "gpt-3.5-turbo",
-                    messages=gpt_prompt
-                )
+                }]
+                
+                with st.spinner(text='Generating prompt 2...'):
+                    gpt_response_2 = op.ChatCompletion.create(
+                        model = "gpt-3.5-turbo",
+                        messages=gpt_prompt_2
+                    )
 
-            prompt_from_gpt = gpt_response.choices[0]["message"]["content"]
-            
-            st.write(prompt_from_gpt)
-            st.write("")
+                prompt_from_gpt_2 = gpt_response_2.choices[0]["message"]["content"]
+                
+                st.write(prompt_from_gpt_2)
+                st.write("")
