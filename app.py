@@ -6,7 +6,7 @@ op.api_key = st.secrets["OPENAI_API_KEY"]
 st.title("GOLF AI engineered by TINO5")
 st.write("")
 
-tab1, tab2 = st.tabs([" ", "Golf Fitting"])
+tab2, tab1 = st.tabs(["Golf Fitting", " "])
 
 with tab1:
     with st.form(key="form_key_tab1"):
@@ -52,7 +52,7 @@ with tab2:
         
         club_no = st.selectbox('Club No.', ('Driver', 'Wood', 'Iron', 'Wedge'))
         fitting_why = st.selectbox('What are you fitting now?', ('For Distance', 'For Draw', 'For Fade'))
-        brands = st.multiselect('What are your favorite brand?', ['Fujikura Ventus', 'Mitsubishi Tensei', 'Graphite Design Tour AD'], default=['Fujikura Ventus', 'Mitsubishi Tensei'])
+        brands = st.multiselect('What are your favorite brand?', ['Fujikura Ventus', 'Mitsubishi Tensei', 'Graphite Design Tour AD'], default=['Fujikura Ventus'])
         
         st.subheader('Enter average trackman data')
         club_speed = st.text_input(label='Club speed (mph)', value="100")
